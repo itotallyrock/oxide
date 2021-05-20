@@ -30,8 +30,8 @@ impl const Shl<SquareOffset> for OxideSquare {
     type Output = Self;
     #[inline]
     fn shl(self, rhs: SquareOffset) -> Self::Output {
-        let shifted = <OxideSquare as Square<OxideBitboard, 64>>::offset(self) + rhs;
-        assert!(shifted <= <OxideSquare as Square<OxideBitboard, 64>>::offset(H8), "Shifted square left off board");
+        let shifted = <OxideSquare as Square<OxideBitboard, 64>>::offset(&self) + rhs;
+        assert!(shifted <= <OxideSquare as Square<OxideBitboard, 64>>::offset(&H8), "Shifted square left off board");
 
         <OxideSquare as Square<OxideBitboard, 64>>::from_offset(shifted).unwrap()
     }
@@ -41,7 +41,7 @@ impl const Shr<SquareOffset> for OxideSquare {
     type Output = Self;
 
     fn shr(self, rhs: SquareOffset) -> Self::Output {
-        <OxideSquare as Square<OxideBitboard, 64>>::from_offset(<OxideSquare as Square<OxideBitboard, 64>>::offset(self).saturating_sub(rhs)).unwrap()
+        <OxideSquare as Square<OxideBitboard, 64>>::from_offset(<OxideSquare as Square<OxideBitboard, 64>>::offset(&self).saturating_sub(rhs)).unwrap()
     }
 }
 
@@ -129,22 +129,22 @@ impl const Square<OxideBitboard, 64> for OxideSquare {
         }
     }
     #[inline]
-    fn x_offset(self) -> SquareOffset {
+    fn x_offset(&self) -> SquareOffset {
         Square::<OxideBitboard, 64>::offset(self) % 8
     }
     #[inline]
-    fn y_offset(self) -> SquareOffset {
+    fn y_offset(&self) -> SquareOffset {
         Square::<OxideBitboard, 64>::offset(self) / 8
     }
     #[inline]
-    fn to_mask(self) -> OxideBitboard {
+    fn to_mask(&self) -> OxideBitboard {
         let offset = <Self as Square::<OxideBitboard, 64>>::offset(self);
 
         OxideBitboard(OxideBitboard::SQUARE.0 << offset)
     }
     #[inline]
-    fn offset(self) -> SquareOffset {
-        self as SquareOffset
+    fn offset(&self) -> SquareOffset {
+        *self as SquareOffset
     }
 }
 
@@ -155,12 +155,12 @@ mod test {
     #[test]
     fn offset_works() {
         // Test corners are correct
-        assert_eq!(Square::<OxideBitboard, 64>::offset(A1), 0);
-        assert_eq!(Square::<OxideBitboard, 64>::offset(H1), 7);
-        assert_eq!(Square::<OxideBitboard, 64>::offset(A8), 56);
-        assert_eq!(Square::<OxideBitboard, 64>::offset(H8), 63);
+        assert_eq!(Square::<OxideBitboard, 64>::offset(&A1), 0);
+        assert_eq!(Square::<OxideBitboard, 64>::offset(&H1), 7);
+        assert_eq!(Square::<OxideBitboard, 64>::offset(&A8), 56);
+        assert_eq!(Square::<OxideBitboard, 64>::offset(&H8), 63);
         // Test something in the middle
-        assert_eq!(Square::<OxideBitboard, 64>::offset(E3), 20);
+        assert_eq!(Square::<OxideBitboard, 64>::offset(&E3), 20);
     }
 
     #[test]
@@ -169,7 +169,7 @@ mod test {
         assert_eq!(<OxideSquare as Square::<OxideBitboard, 64>>::from_offset(SquareOffset::MAX), None);
         // assert_eq!(Square::<OxideBitboard, 64>::from_offset(SquareOffset::MAX), None);
         for square in Square::<OxideBitboard, 64>::SQUARES.iter().copied::<OxideSquare>() {
-            let offset = Square::<OxideBitboard, 64>::offset(square);
+            let offset = Square::<OxideBitboard, 64>::offset(&square);
             assert_eq!(Square::<OxideBitboard, 64>::from_offset(offset), Some(square));
         }
     }
@@ -184,51 +184,51 @@ mod test {
     #[test]
     fn from_mask_matches_to_mask() {
         for square in OxideSquare::SQUARES {
-            assert_eq!(<OxideSquare as Square::<OxideBitboard, 64>>::from_mask(<OxideSquare as Square::<OxideBitboard, 64>>::to_mask(square)), Some(square));
+            assert_eq!(<OxideSquare as Square::<OxideBitboard, 64>>::from_mask(<OxideSquare as Square::<OxideBitboard, 64>>::to_mask(&square)), Some(square));
         }
     }
 
     #[test]
     fn to_bitboard_works() {
         // Test corners are correct
-        assert_eq!(Square::<OxideBitboard, 64>::to_mask(A1), OxideBitboard(0x1u64));
-        assert_eq!(Square::<OxideBitboard, 64>::to_mask(H1), OxideBitboard(0x80u64));
-        assert_eq!(Square::<OxideBitboard, 64>::to_mask(A8), OxideBitboard(0x100000000000000u64));
-        assert_eq!(Square::<OxideBitboard, 64>::to_mask(H8), OxideBitboard(0x8000000000000000u64));
+        assert_eq!(Square::<OxideBitboard, 64>::to_mask(&A1), OxideBitboard(0x1u64));
+        assert_eq!(Square::<OxideBitboard, 64>::to_mask(&H1), OxideBitboard(0x80u64));
+        assert_eq!(Square::<OxideBitboard, 64>::to_mask(&A8), OxideBitboard(0x100000000000000u64));
+        assert_eq!(Square::<OxideBitboard, 64>::to_mask(&H8), OxideBitboard(0x8000000000000000u64));
         // Test something in the middle
-        assert_eq!(Square::<OxideBitboard, 64>::to_mask(E3), OxideBitboard(0x100000u64));
+        assert_eq!(Square::<OxideBitboard, 64>::to_mask(&E3), OxideBitboard(0x100000u64));
     }
 
     #[test]
     fn x_offset_works() {
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(A1), 0);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(A3), 0);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(A8), 0);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(B2), 1);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(B8), 1);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(C4), 2);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(D4), 3);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(E1), 4);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(F7), 5);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(G3), 6);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(H3), 7);
-        assert_eq!(Square::<OxideBitboard, 64>::x_offset(H8), 7);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&A1), 0);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&A3), 0);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&A8), 0);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&B2), 1);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&B8), 1);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&C4), 2);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&D4), 3);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&E1), 4);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&F7), 5);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&G3), 6);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&H3), 7);
+        assert_eq!(Square::<OxideBitboard, 64>::x_offset(&H8), 7);
     }
 
     #[test]
     fn y_offset_works() {
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(A1), 0);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(A3), 2);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(A8), 7);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(B2), 1);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(B8), 7);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(C4), 3);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(D4), 3);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(E1), 0);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(F7), 6);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(G3), 2);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(H3), 2);
-        assert_eq!(Square::<OxideBitboard, 64>::y_offset(H8), 7);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&A1), 0);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&A3), 2);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&A8), 7);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&B2), 1);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&B8), 7);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&C4), 3);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&D4), 3);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&E1), 0);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&F7), 6);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&G3), 2);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&H3), 2);
+        assert_eq!(Square::<OxideBitboard, 64>::y_offset(&H8), 7);
     }
 
 

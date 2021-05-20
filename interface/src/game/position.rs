@@ -1,5 +1,4 @@
 use crate::game::{Side, Piece, BoardMask, SidedPiece, Square, CastleRights};
-use crate::types::PlyCount;
 
 pub trait PieceArrangement<SideType, PieceType, SidedPieceType, BitboardType, SquareType>
     where SideType: Side,

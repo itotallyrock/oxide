@@ -264,7 +264,7 @@ impl const BoardMask for OxideBitboard {
 impl FromIterator<OxideSquare> for OxideBitboard {
     fn from_iter<T: IntoIterator<Item = OxideSquare>>(iter: T) -> Self {
         iter.into_iter().fold(OxideBitboard::EMPTY, |bb, sq| {
-            bb | <OxideSquare as Square<OxideBitboard, 64>>::to_mask(sq)
+            bb | <OxideSquare as Square<OxideBitboard, 64>>::to_mask(&sq)
         })
     }
 }
