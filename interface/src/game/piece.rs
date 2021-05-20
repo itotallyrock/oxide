@@ -33,5 +33,5 @@ pub trait SidedPiece<SideType: Side>:  Sized + Debug + Display + Default + Eq + 
     const EMPTY: Self;
 
     fn side(&self) -> SideType;
-    fn remove_side(self) -> Self::PieceType;
+    fn unsided_piece(&self) -> Self::PieceType;
 }
