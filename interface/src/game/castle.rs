@@ -20,9 +20,9 @@ pub trait CastleRights<SideType: Side>: Sized + Debug + Display + Default + Eq +
     const BLACK_ALL_WHITE_QUEEN: Self;
     const ALL: Self;
 
-    fn for_side(self, side: SideType) -> Self;
-    fn contains(self, other: Self) -> bool;
-    fn intersects(self, other: Self) -> bool;
+    fn for_side(&self, side: SideType) -> Self;
+    fn contains(&self, other: Self) -> bool;
+    fn intersects(&self, other: Self) -> bool;
     fn insert(&mut self, other: Self);
     fn remove(&mut self, other: Self);
 }
