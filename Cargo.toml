@@ -1,0 +1,8 @@
+
+[workspace]
+members = [
+    "interface",
+    "oxide-interface",
+    "move-gen",
+    "uci-engine",
+]
