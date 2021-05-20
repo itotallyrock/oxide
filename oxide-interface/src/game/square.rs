@@ -1,7 +1,10 @@
 use std::fmt::{Display, Formatter, Result as FormatResult};
-use interface::game::{Square, Shiftable, BoardMask, SquareOffset};
-use OxideSquare::*;
 use std::ops::{Shl, Shr};
+
+use interface::game::{BoardMask, Shiftable, Square};
+use interface::types::SquareOffset;
+use OxideSquare::*;
+
 use crate::game::OxideBitboard;
 
 #[repr(u8)]

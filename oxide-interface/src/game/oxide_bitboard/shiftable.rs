@@ -1,6 +1,9 @@
-use interface::game::{SquareOffset, Shiftable};
-use crate::game::OxideBitboard;
 use std::ops::{Shl, Shr};
+
+use interface::game::Shiftable;
+use interface::types::SquareOffset;
+
+use crate::game::OxideBitboard;
 
 // Must be defined by number to avoid circular dependency
 pub(crate) const NOT_A_FILE: OxideBitboard = OxideBitboard(0xfefefefefefefefeu64);
@@ -61,8 +64,9 @@ impl const Shiftable for OxideBitboard {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use interface::game::BoardMask;
+
+    use super::*;
 
     #[test]
     fn edge_consts_match() {

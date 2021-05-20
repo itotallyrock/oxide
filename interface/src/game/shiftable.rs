@@ -1,5 +1,5 @@
 use std::ops::{Shr, Shl};
-use crate::game::SquareOffset;
+use crate::types::SquareOffset;
 
 pub trait Shiftable: Shl<SquareOffset, Output = Self> + Shr<SquareOffset, Output = Self> + Sized {
     fn north_shift(self) -> Self;

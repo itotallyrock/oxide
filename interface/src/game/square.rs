@@ -1,7 +1,7 @@
 use std::fmt::Display;
-use crate::game::{Shiftable, BoardMask};
 
-pub type SquareOffset = u8;
+use crate::game::{BoardMask, Shiftable};
+use crate::types::SquareOffset;
 
 pub trait Square<BB: BoardMask, const COUNT: usize>: Display + Shiftable + Copy {
     /// List of all available squares
