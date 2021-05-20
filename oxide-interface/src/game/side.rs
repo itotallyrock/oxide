@@ -22,19 +22,19 @@ impl Side for OxideSide {
     const BLACK: Self = Self::Black;
 
     #[inline]
-    fn switch_sides(self) -> Self {
+    fn opposite_side(&self) -> Self {
         match self {
             OxideSide::White => OxideSide::Black,
             OxideSide::Black => OxideSide::White,
         }
     }
     #[inline]
-    fn is_white(self) -> bool {
-        self == OxideSide::White
+    fn is_white(&self) -> bool {
+        *self == OxideSide::White
     }
     #[inline]
-    fn is_black(self) -> bool {
-        self == OxideSide::Black
+    fn is_black(&self) -> bool {
+        *self == OxideSide::Black
     }
 }
 
@@ -45,20 +45,20 @@ mod test {
 
     #[test]
     fn is_white_works() {
-        assert_eq!(<OxideSide as Side>::is_white(OxideSide::White), true);
-        assert_eq!(<OxideSide as Side>::is_white(OxideSide::Black), false);
+        assert_eq!(<OxideSide as Side>::is_white(&OxideSide::White), true);
+        assert_eq!(<OxideSide as Side>::is_white(&OxideSide::Black), false);
     }
 
     #[test]
     fn is_black_works() {
-        assert_eq!(<OxideSide as Side>::is_black(OxideSide::White), false);
-        assert_eq!(<OxideSide as Side>::is_black(OxideSide::Black), true);
+        assert_eq!(<OxideSide as Side>::is_black(&OxideSide::White), false);
+        assert_eq!(<OxideSide as Side>::is_black(&OxideSide::Black), true);
     }
 
     #[test]
     fn switch_sides_works() {
-        assert_eq!(<OxideSide as Side>::switch_sides(OxideSide::White), OxideSide::Black);
-        assert_eq!(<OxideSide as Side>::switch_sides(OxideSide::Black), OxideSide::White);
+        assert_eq!(<OxideSide as Side>::opposite_side(&OxideSide::White), OxideSide::Black);
+        assert_eq!(<OxideSide as Side>::opposite_side(&OxideSide::Black), OxideSide::White);
     }
 
     #[test]
