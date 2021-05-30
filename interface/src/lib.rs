@@ -3,5 +3,6 @@
 #![feature(const_generics)]
 #![feature(const_evaluatable_checked)]
 
-pub mod game;
 pub mod types;
+pub mod game;
+pub mod engine;

@@ -1,6 +1,6 @@
 
-use interface::game::Square;
-use oxide_interface::game::{OxideSquare, OxideBitboard};
+use interface::game::{Square, ChessMove, SimpleChessMove};
+use oxide_interface::game::{OxideSquare, OxideBitboard, OxideMove, OxideSquare::*, OxidePiece};
 
 fn main() {
     const SQUARES: &[OxideSquare] = &[OxideSquare::A2, OxideSquare::B3, OxideSquare::H4, OxideSquare::E5];
@@ -9,7 +9,12 @@ fn main() {
         dbg!(k);
     }
     // let t = oxide_interface::game::OxideSquare::SQUARES;
-    for x in <OxideSquare as Square<OxideBitboard, 64>>::SQUARES.iter().copied().filter(|s| SQUARES.contains(s)) {
+    for x in OxideSquare::SQUARES.iter().copied().filter(|s| SQUARES.contains(s)) {
         println!("{}", x);
     }
+
+    let mut t = OxideMove::new(E7, F8);
+    t.set_capture();
+    t.set_promotion(OxidePiece::Queen);
+    println!("{} {} {} {}", OxideMove::WHITE_KING_CASTLE, OxideMove::new(E7, F8), t, t.simple_move());
 }

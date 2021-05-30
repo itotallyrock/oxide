@@ -16,7 +16,7 @@ impl Display for OxideSide {
     }
 }
 
-impl Side for OxideSide {
+impl const Side for OxideSide {
     const SIDES: [Self; 2] = [Self::White, Self::Black];
     const WHITE: Self = Self::White;
     const BLACK: Self = Self::Black;
@@ -30,11 +30,14 @@ impl Side for OxideSide {
     }
     #[inline]
     fn is_white(&self) -> bool {
-        *self == OxideSide::White
+        match self {
+            OxideSide::White => true,
+            OxideSide::Black => false,
+        }
     }
     #[inline]
     fn is_black(&self) -> bool {
-        *self == OxideSide::Black
+        !self.is_white()
     }
 }
 

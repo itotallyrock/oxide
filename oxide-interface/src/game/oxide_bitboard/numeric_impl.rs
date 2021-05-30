@@ -1,6 +1,6 @@
 
 use crate::game::OxideBitboard;
-use std::ops::{BitOr, BitXor, BitAnd, Not};
+use std::ops::{BitOr, BitXor, BitAnd, Not, BitOrAssign, BitAndAssign, BitXorAssign};
 use std::fmt::{UpperHex, LowerHex, Formatter, Result as FormatResult};
 
 impl const BitOr for OxideBitboard {
@@ -32,6 +32,27 @@ impl const Not for OxideBitboard {
     #[inline]
     fn not(self) -> Self::Output {
         OxideBitboard(!self.0)
+    }
+}
+
+impl const BitOrAssign for OxideBitboard {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: Self) {
+        *self = *self | rhs;
+    }
+}
+
+impl const BitAndAssign for OxideBitboard {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: Self) {
+        *self = *self & rhs;
+    }
+}
+
+impl const BitXorAssign for OxideBitboard {
+    #[inline]
+    fn bitxor_assign(&mut self, rhs: Self) {
+        *self = *self ^ rhs;
     }
 }
 

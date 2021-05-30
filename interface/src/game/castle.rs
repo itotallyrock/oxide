@@ -1,8 +1,8 @@
 use std::fmt::{Debug, Display};
-use crate::game::Side;
-use std::ops::{BitOr, BitAnd, BitXor};
+use crate::game::Position;
+use std::ops::{BitOr, BitAnd, Not};
 
-pub trait CastleRights<SideType: Side>: Sized + Debug + Display + Default + Eq + PartialEq + BitOr + BitAnd + BitXor {
+pub trait CastleRights<P: Position>: Sized + Debug + Display + Eq + PartialEq + BitOr + BitAnd + Not {
     const NONE: Self;
     const WHITE_KING: Self;
     const WHITE_QUEEN: Self;
@@ -20,7 +20,7 @@ pub trait CastleRights<SideType: Side>: Sized + Debug + Display + Default + Eq +
     const BLACK_ALL_WHITE_QUEEN: Self;
     const ALL: Self;
 
-    fn for_side(&self, side: SideType) -> Self;
+    fn for_side(&self, side: P::Side) -> Self;
     fn contains(&self, other: Self) -> bool;
     fn intersects(&self, other: Self) -> bool;
     fn insert(&mut self, other: Self);

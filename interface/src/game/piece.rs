@@ -1,8 +1,7 @@
-use crate::game::Side;
+use crate::game::Position;
 use std::fmt::{Debug, Display};
 
-pub trait Piece<SideType: Side>: Sized + Debug + Display + Default + Eq + PartialEq {
-    type SidedPieceType: SidedPiece<SideType>;
+pub trait Piece<P: Position>: Sized + Debug + Display + Default + Eq + PartialEq + From<char> {
     const PIECES: [Self; 6];
     const PAWN: Self;
     const KNIGHT: Self;
@@ -12,11 +11,10 @@ pub trait Piece<SideType: Side>: Sized + Debug + Display + Default + Eq + Partia
     const KING: Self;
     const EMPTY: Self;
 
-    fn add_side(self, side: SideType) -> Self::SidedPieceType;
+    fn add_side(self, side: P::Side) -> P::SidedPiece;
 }
 
-pub trait SidedPiece<SideType: Side>:  Sized + Debug + Display + Default + Eq + PartialEq {
-    type PieceType: Piece<SideType>;
+pub trait SidedPiece<P: Position>: Sized + Debug + Display + Default + Eq + PartialEq + From<char> + Into<char> {
     const PIECES: [Self; 12];
     const WHITE_PAWN: Self;
     const BLACK_PAWN: Self;
@@ -32,6 +30,6 @@ pub trait SidedPiece<SideType: Side>:  Sized + Debug + Display + Default + Eq + 
     const BLACK_KING: Self;
     const EMPTY: Self;
 
-    fn side(&self) -> SideType;
-    fn unsided_piece(&self) -> Self::PieceType;
+    fn side(&self) -> P::Side;
+    fn unsided_piece(&self) -> P::Piece;
 }

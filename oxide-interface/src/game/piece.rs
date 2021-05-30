@@ -1,5 +1,7 @@
-use interface::game::{Piece, Side, SidedPiece};
+use interface::game::{Piece, Side, SidedPiece, Position};
 use std::fmt::{Display, Formatter, Result as FormatResult};
+use crate::engine::OxidePosition;
+use crate::game::OxideSide;
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum OxidePiece {
@@ -50,8 +52,21 @@ impl Display for OxidePiece {
     }
 }
 
-impl<SideType: Side> Piece<SideType> for OxidePiece {
-    type SidedPieceType = OxideSidedPiece;
+impl From<char> for OxidePiece {
+    fn from(letter: char) -> Self {
+        match letter.to_ascii_lowercase() {
+            'p' => Self::Pawn,
+            'r' => Self::Rook,
+            'q' => Self::Queen,
+            'k' => Self::King,
+            'n' => Self::Knight,
+            'b' => Self::Bishop,
+            _ => Self::Empty
+        }
+    }
+}
+
+impl<P: Position> Piece<P> for OxidePiece {
     const PIECES: [Self; 6] = [
         Self::Pawn,
         Self::Knight,
@@ -70,15 +85,15 @@ impl<SideType: Side> Piece<SideType> for OxidePiece {
     const EMPTY: Self = Self::Empty;
 
     #[inline]
-    fn add_side(self, side: SideType) -> Self::SidedPieceType {
+    fn add_side(self, side: P::Side) -> P::SidedPiece {
         match self {
-            Self::Pawn => if side.is_white() { <Self::SidedPieceType as SidedPiece<SideType>>::WHITE_PAWN } else { <Self::SidedPieceType as SidedPiece<SideType>>::BLACK_PAWN },
-            Self::Knight => if side.is_white() { <Self::SidedPieceType as SidedPiece<SideType>>::WHITE_KNIGHT } else { <Self::SidedPieceType as SidedPiece<SideType>>::BLACK_KNIGHT },
-            Self::Bishop => if side.is_white() { <Self::SidedPieceType as SidedPiece<SideType>>::WHITE_BISHOP } else { <Self::SidedPieceType as SidedPiece<SideType>>::BLACK_BISHOP },
-            Self::Rook => if side.is_white() { <Self::SidedPieceType as SidedPiece<SideType>>::WHITE_ROOK } else { <Self::SidedPieceType as SidedPiece<SideType>>::BLACK_ROOK },
-            Self::Queen => if side.is_white() { <Self::SidedPieceType as SidedPiece<SideType>>::WHITE_QUEEN } else { <Self::SidedPieceType as SidedPiece<SideType>>::BLACK_QUEEN },
-            Self::King => if side.is_white() { <Self::SidedPieceType as SidedPiece<SideType>>::WHITE_KING } else { <Self::SidedPieceType as SidedPiece<SideType>>::BLACK_KING },
-            Self::Empty => if side.is_white() { <Self::SidedPieceType as SidedPiece<SideType>>::EMPTY } else { <Self::SidedPieceType as SidedPiece<SideType>>::EMPTY },
+            Self::Pawn => if side.is_white() { <P::SidedPiece as SidedPiece<P>>::WHITE_PAWN } else { <P::SidedPiece as SidedPiece<P>>::BLACK_PAWN },
+            Self::Knight => if side.is_white() { <P::SidedPiece as SidedPiece<P>>::WHITE_KNIGHT } else { <P::SidedPiece as SidedPiece<P>>::BLACK_KNIGHT },
+            Self::Bishop => if side.is_white() { <P::SidedPiece as SidedPiece<P>>::WHITE_BISHOP } else { <P::SidedPiece as SidedPiece<P>>::BLACK_BISHOP },
+            Self::Rook => if side.is_white() { <P::SidedPiece as SidedPiece<P>>::WHITE_ROOK } else { <P::SidedPiece as SidedPiece<P>>::BLACK_ROOK },
+            Self::Queen => if side.is_white() { <P::SidedPiece as SidedPiece<P>>::WHITE_QUEEN } else { <P::SidedPiece as SidedPiece<P>>::BLACK_QUEEN },
+            Self::King => if side.is_white() { <P::SidedPiece as SidedPiece<P>>::WHITE_KING } else { <P::SidedPiece as SidedPiece<P>>::BLACK_KING },
+            Self::Empty => if side.is_white() { <P::SidedPiece as SidedPiece<P>>::EMPTY } else { <P::SidedPiece as SidedPiece<P>>::EMPTY },
         }
     }
 }
@@ -96,9 +111,9 @@ impl Display for OxideSidedPiece {
             Self::WhitePawn => write!(f, "P"),
             Self::BlackPawn => write!(f, "p"),
             Self::WhiteKnight => write!(f, "N"),
-            Self::BlackKnight => write!(f, "N"),
+            Self::BlackKnight => write!(f, "n"),
             Self::WhiteBishop => write!(f, "B"),
-            Self::BlackBishop => write!(f, "B"),
+            Self::BlackBishop => write!(f, "b"),
             Self::WhiteRook => write!(f, "R"),
             Self::BlackRook => write!(f, "r"),
             Self::WhiteQueen => write!(f, "Q"),
@@ -110,8 +125,47 @@ impl Display for OxideSidedPiece {
     }
 }
 
-impl<SideType: Side> SidedPiece<SideType> for OxideSidedPiece {
-    type PieceType = OxidePiece;
+impl From<char> for OxideSidedPiece {
+    fn from(letter: char) -> Self {
+        match letter {
+            'P' => Self::WhitePawn,
+            'p' => Self::BlackPawn,
+            'R' => Self::WhiteRook,
+            'r' => Self::BlackRook,
+            'Q' => Self::WhiteQueen,
+            'q' => Self::BlackQueen,
+            'K' => Self::WhiteKing,
+            'k' => Self::BlackKing,
+            'N' => Self::WhiteKnight,
+            'n' => Self::BlackKnight,
+            'B' => Self::WhiteBishop,
+            'b' => Self::BlackBishop,
+            _ => Self::Empty
+        }
+    }
+}
+
+impl Into<char> for OxideSidedPiece {
+    fn into(self) -> char {
+        match self {
+            Self::WhitePawn => 'P',
+            Self::BlackPawn => 'p',
+            Self::WhiteRook => 'R',
+            Self::BlackRook => 'r',
+            Self::WhiteQueen => 'Q',
+            Self::BlackQueen => 'q',
+            Self::WhiteKing => 'K',
+            Self::BlackKing => 'k',
+            Self::WhiteKnight => 'N',
+            Self::BlackKnight => 'n',
+            Self::WhiteBishop => 'B',
+            Self::BlackBishop => 'b',
+            Self::Empty => ' ',
+        }
+    }
+}
+
+impl SidedPiece<OxidePosition> for OxideSidedPiece {
     const PIECES: [Self; 12] = [
         Self::WhitePawn,
         Self::BlackPawn,
@@ -140,23 +194,23 @@ impl<SideType: Side> SidedPiece<SideType> for OxideSidedPiece {
     const BLACK_KING: Self = Self::BlackKing;
     const EMPTY: Self = Self::Empty;
 
-    fn side(&self) -> SideType {
+    fn side(&self) -> OxideSide {
         match self {
-            OxideSidedPiece::WhitePawn | OxideSidedPiece::WhiteKnight | OxideSidedPiece::WhiteBishop | OxideSidedPiece::WhiteRook | OxideSidedPiece::WhiteQueen | OxideSidedPiece::WhiteKing => SideType::WHITE,
-            OxideSidedPiece::BlackPawn | OxideSidedPiece::BlackKnight | OxideSidedPiece::BlackBishop | OxideSidedPiece::BlackRook | OxideSidedPiece::BlackQueen | OxideSidedPiece::BlackKing => SideType::BLACK,
+            OxideSidedPiece::WhitePawn | OxideSidedPiece::WhiteKnight | OxideSidedPiece::WhiteBishop | OxideSidedPiece::WhiteRook | OxideSidedPiece::WhiteQueen | OxideSidedPiece::WhiteKing => OxideSide::WHITE,
+            OxideSidedPiece::BlackPawn | OxideSidedPiece::BlackKnight | OxideSidedPiece::BlackBishop | OxideSidedPiece::BlackRook | OxideSidedPiece::BlackQueen | OxideSidedPiece::BlackKing => OxideSide::BLACK,
             OxideSidedPiece::Empty => panic!("Attempting to get side of none colored piece"),
         }
     }
 
-    fn unsided_piece(&self) -> Self::PieceType {
+    fn unsided_piece(&self) -> OxidePiece {
         match self {
-            OxideSidedPiece::WhitePawn | OxideSidedPiece::BlackPawn => Self::PieceType::Pawn,
-            OxideSidedPiece::WhiteKnight | OxideSidedPiece::BlackKnight => Self::PieceType::Knight,
-            OxideSidedPiece::WhiteBishop | OxideSidedPiece::BlackBishop => Self::PieceType::Bishop,
-            OxideSidedPiece::WhiteRook | OxideSidedPiece::BlackRook => Self::PieceType::Rook,
-            OxideSidedPiece::WhiteQueen | OxideSidedPiece::BlackQueen => Self::PieceType::Queen,
-            OxideSidedPiece::WhiteKing | OxideSidedPiece::BlackKing => Self::PieceType::King,
-            OxideSidedPiece::Empty => Self::PieceType::Empty,
+            OxideSidedPiece::WhitePawn | OxideSidedPiece::BlackPawn => OxidePiece::Pawn,
+            OxideSidedPiece::WhiteKnight | OxideSidedPiece::BlackKnight => OxidePiece::Knight,
+            OxideSidedPiece::WhiteBishop | OxideSidedPiece::BlackBishop => OxidePiece::Bishop,
+            OxideSidedPiece::WhiteRook | OxideSidedPiece::BlackRook => OxidePiece::Rook,
+            OxideSidedPiece::WhiteQueen | OxideSidedPiece::BlackQueen => OxidePiece::Queen,
+            OxideSidedPiece::WhiteKing | OxideSidedPiece::BlackKing => OxidePiece::King,
+            OxideSidedPiece::Empty => OxidePiece::Empty,
         }
     }
 }
@@ -168,41 +222,41 @@ mod test {
 
     #[test]
     fn remove_side_works() {
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::WhitePawn), OxidePiece::Pawn);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::BlackPawn), OxidePiece::Pawn);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::WhiteKnight), OxidePiece::Knight);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::BlackKnight), OxidePiece::Knight);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::WhiteBishop), OxidePiece::Bishop);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::BlackBishop), OxidePiece::Bishop);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::WhiteRook), OxidePiece::Rook);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::BlackRook), OxidePiece::Rook);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::WhiteQueen), OxidePiece::Queen);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::BlackQueen), OxidePiece::Queen);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::WhiteKing), OxidePiece::King);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::BlackKing), OxidePiece::King);
-        assert_eq!(SidedPiece::<OxideSide>::unsided_piece(&OxideSidedPiece::Empty), OxidePiece::Empty);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhitePawn), OxidePiece::Pawn);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackPawn), OxidePiece::Pawn);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteKnight), OxidePiece::Knight);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackKnight), OxidePiece::Knight);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteBishop), OxidePiece::Bishop);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackBishop), OxidePiece::Bishop);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteRook), OxidePiece::Rook);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackRook), OxidePiece::Rook);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteQueen), OxidePiece::Queen);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackQueen), OxidePiece::Queen);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteKing), OxidePiece::King);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackKing), OxidePiece::King);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::Empty), OxidePiece::Empty);
     }
 
     #[test]
     fn side_of_sided_works() {
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::WhitePawn), OxideSide::White);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::BlackPawn), OxideSide::Black);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::WhiteKnight), OxideSide::White);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::BlackKnight), OxideSide::Black);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::WhiteBishop), OxideSide::White);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::BlackBishop), OxideSide::Black);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::WhiteRook), OxideSide::White);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::BlackRook), OxideSide::Black);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::WhiteQueen), OxideSide::White);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::BlackQueen), OxideSide::Black);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::WhiteKing), OxideSide::White);
-        assert_eq!(SidedPiece::<OxideSide>::side(&OxideSidedPiece::BlackKing), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhitePawn), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackPawn), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhiteKnight), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackKnight), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhiteBishop), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackBishop), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhiteRook), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackRook), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhiteQueen), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackQueen), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhiteKing), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackKing), OxideSide::Black);
     }
 
     #[should_panic]
     #[test]
     fn side_of_none_panics() {
-        SidedPiece::<OxideSide>::side(&OxideSidedPiece::Empty);
+        <OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::Empty);
     }
 
     #[test]
@@ -210,9 +264,9 @@ mod test {
         assert_eq!(format!("{}", OxideSidedPiece::WhitePawn), String::from("P"));
         assert_eq!(format!("{}", OxideSidedPiece::BlackPawn), String::from("p"));
         assert_eq!(format!("{}", OxideSidedPiece::WhiteKnight), String::from("N"));
-        assert_eq!(format!("{}", OxideSidedPiece::BlackKnight), String::from("N"));
+        assert_eq!(format!("{}", OxideSidedPiece::BlackKnight), String::from("n"));
         assert_eq!(format!("{}", OxideSidedPiece::WhiteBishop), String::from("B"));
-        assert_eq!(format!("{}", OxideSidedPiece::BlackBishop), String::from("B"));
+        assert_eq!(format!("{}", OxideSidedPiece::BlackBishop), String::from("b"));
         assert_eq!(format!("{}", OxideSidedPiece::WhiteRook), String::from("R"));
         assert_eq!(format!("{}", OxideSidedPiece::BlackRook), String::from("r"));
         assert_eq!(format!("{}", OxideSidedPiece::WhiteQueen), String::from("Q"));

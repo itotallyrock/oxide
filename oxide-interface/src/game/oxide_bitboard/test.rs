@@ -1,4 +1,5 @@
 use super::*;
+use crate::game::OxideSquare;
 
 #[test]
 fn masks_are_valid() {

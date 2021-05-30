@@ -9,18 +9,25 @@ mod bench;
 #[macro_use]
 mod fill_macros;
 
-use interface::game::{Shiftable, Square, BoardMask};
-use crate::game::OxideSquare;
-use std::iter::FromIterator;
+use interface::game::{Shiftable, BoardMask};
 use std::fmt::{Formatter, Result as FormatResult, Debug};
 use crate::game::oxide_bitboard::shiftable::{NOT_A_FILE, NOT_H_FILE};
+use crate::engine::OxidePosition;
 
 const NOT_A_FILE_BB: u64 = NOT_A_FILE.0;
 const NOT_H_FILE_BB: u64 = NOT_H_FILE.0;
-const FULL_BB: u64 = <OxideBitboard as BoardMask>::FULL.0;
+const FULL_BB: u64 = OxideBitboard::FULL.0;
 
-#[derive(Eq, PartialEq, Copy, Clone)]
-pub struct OxideBitboard(pub(crate) u64);
+#[derive(Copy, Clone, Ord, PartialOrd)]
+pub struct OxideBitboard(pub u64);
+
+impl const PartialEq for OxideBitboard {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl const Eq for OxideBitboard {}
 
 impl Debug for OxideBitboard {
     fn fmt(&self, f: &mut Formatter<'_>) -> FormatResult {
@@ -28,19 +35,20 @@ impl Debug for OxideBitboard {
     }
 }
 
-impl const BoardMask for OxideBitboard {
+impl const BoardMask<OxidePosition> for OxideBitboard {
     const SQUARE: Self = Self(1u64);
     const EMPTY: Self = Self(0u64);
     const FULL: Self = Self(0xFFFFFFFFFFFFFFFFu64);
 
-    const A_FILE: Self = !Self::east_shift(Self::FULL);
-    const B_FILE: Self = Self::east_shift(Self::A_FILE);
-    const C_FILE: Self = Self::east_shift(Self::B_FILE);
-    const D_FILE: Self = Self::east_shift(Self::C_FILE);
-    const E_FILE: Self = Self::east_shift(Self::D_FILE);
-    const F_FILE: Self = Self::east_shift(Self::E_FILE);
-    const G_FILE: Self = Self::east_shift(Self::F_FILE);
-    const H_FILE: Self = Self::east_shift(Self::G_FILE);
+    // TODO: Figure out what in const_trait_impl is wrong with this
+    const A_FILE: Self = Self(!(Self::FULL.0 << 1 & NOT_A_FILE.0)); // !Self::east_shift(Self::FULL);
+    const B_FILE: Self = Self(Self::A_FILE.0 << 1 & NOT_A_FILE.0); // Self::east_shift(Self::A_FILE);
+    const C_FILE: Self = Self(Self::B_FILE.0 << 1 & NOT_A_FILE.0); // Self::east_shift(Self::B_FILE);
+    const D_FILE: Self = Self(Self::C_FILE.0 << 1 & NOT_A_FILE.0); // Self::east_shift(Self::C_FILE);
+    const E_FILE: Self = Self(Self::D_FILE.0 << 1 & NOT_A_FILE.0); // Self::east_shift(Self::D_FILE);
+    const F_FILE: Self = Self(Self::E_FILE.0 << 1 & NOT_A_FILE.0); // Self::east_shift(Self::E_FILE);
+    const G_FILE: Self = Self(Self::F_FILE.0 << 1 & NOT_A_FILE.0); // Self::east_shift(Self::F_FILE);
+    const H_FILE: Self = Self(Self::G_FILE.0 << 1 & NOT_A_FILE.0); // Self::east_shift(Self::G_FILE);
 
     const RANK_1: Self = !Self::north_shift(Self::FULL);
     const RANK_2: Self = Self::north_shift(Self::RANK_1);
@@ -211,60 +219,53 @@ impl const BoardMask for OxideBitboard {
 
     // Ray attacks
     #[inline]
-    fn south_ray_attacks(rooks: Self, empty: Self) -> Self {
-        Self::south_shift(Self::south_occluded_fill(rooks, empty))
+    fn south_ray_attacks(self, empty: Self) -> Self {
+        Self::south_shift(Self::south_occluded_fill(self, empty))
     }
 
     #[inline]
-    fn north_ray_attacks(rooks: Self, empty: Self) -> Self {
-        Self::north_shift(Self::north_occluded_fill(rooks, empty))
+    fn north_ray_attacks(self, empty: Self) -> Self {
+        Self::north_shift(Self::north_occluded_fill(self, empty))
     }
 
     #[inline]
-    fn east_ray_attacks(rooks: Self, empty: Self) -> Self {
-        Self::east_shift(Self::east_occluded_fill(rooks, empty))
+    fn east_ray_attacks(self, empty: Self) -> Self {
+        Self::east_shift(Self::east_occluded_fill(self, empty))
     }
 
     #[inline]
-    fn west_ray_attacks(rooks: Self, empty: Self) -> Self {
-        Self::west_shift(Self::west_occluded_fill(rooks, empty))
+    fn west_ray_attacks(self, empty: Self) -> Self {
+        Self::west_shift(Self::west_occluded_fill(self, empty))
     }
 
     #[inline]
-    fn north_west_ray_attacks(bishops: Self, empty: Self) -> Self {
-        Self::north_west_shift(Self::north_west_occluded_fill(bishops, empty))
+    fn north_west_ray_attacks(self, empty: Self) -> Self {
+        Self::north_west_shift(Self::north_west_occluded_fill(self, empty))
     }
 
     #[inline]
-    fn north_east_ray_attacks(bishops: Self, empty: Self) -> Self {
-        Self::north_east_shift(Self::north_east_occluded_fill(bishops, empty))
+    fn north_east_ray_attacks(self, empty: Self) -> Self {
+        Self::north_east_shift(Self::north_east_occluded_fill(self, empty))
     }
 
     #[inline]
-    fn south_west_ray_attacks(bishops: Self, empty: Self) -> Self {
-        Self::south_west_shift(Self::south_west_occluded_fill(bishops, empty))
+    fn south_west_ray_attacks(self, empty: Self) -> Self {
+        Self::south_west_shift(Self::south_west_occluded_fill(self, empty))
     }
 
     #[inline]
-    fn south_east_ray_attacks(bishops: Self, empty: Self) -> Self {
-        Self::south_east_shift(Self::south_east_occluded_fill(bishops, empty))
+    fn south_east_ray_attacks(self, empty: Self) -> Self {
+        Self::south_east_shift(Self::south_east_occluded_fill(self, empty))
     }
 
     #[inline]
-    fn cardinal_ray_attacks(rooks: Self, empty: Self) -> Self {
-        Self::north_ray_attacks(rooks, empty) | Self::south_ray_attacks(rooks, empty) | Self::east_ray_attacks(rooks, empty) | Self::west_ray_attacks(rooks, empty)
+    fn cardinal_ray_attacks(self, empty: Self) -> Self {
+        Self::north_ray_attacks(self, empty) | Self::south_ray_attacks(self, empty) | Self::east_ray_attacks(self, empty) | Self::west_ray_attacks(self, empty)
     }
 
     #[inline]
-    fn diagonal_ray_attacks(bishops: Self, empty: Self) -> Self {
-        Self::north_west_ray_attacks(bishops, empty) | Self::north_east_ray_attacks(bishops, empty) | Self::south_west_ray_attacks(bishops, empty) | Self::south_east_ray_attacks(bishops, empty)
+    fn diagonal_ray_attacks(self, empty: Self) -> Self {
+        Self::north_west_ray_attacks(self, empty) | Self::north_east_ray_attacks(self, empty) | Self::south_west_ray_attacks(self, empty) | Self::south_east_ray_attacks(self, empty)
     }
 }
 
-impl FromIterator<OxideSquare> for OxideBitboard {
-    fn from_iter<T: IntoIterator<Item = OxideSquare>>(iter: T) -> Self {
-        iter.into_iter().fold(OxideBitboard::EMPTY, |bb, sq| {
-            bb | <OxideSquare as Square<OxideBitboard, 64>>::to_mask(&sq)
-        })
-    }
-}
