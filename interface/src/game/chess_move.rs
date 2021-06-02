@@ -15,6 +15,12 @@ pub trait ChessMove<P: Position>: SimpleChessMove<P> {
     const BLACK_KING_CASTLE: Self;
     const BLACK_QUEEN_CASTLE: Self;
 
+    fn new_double_pawn_push(from: P::Square, to: P::Square) -> Self;
+    fn new_en_passant_capture(from: P::Square, to: P::Square) -> Self;
+    fn new_capture(from: P::Square, to: P::Square) -> Self;
+    fn new_promotion(from: P::Square, to: P::Square, promotion: P::Piece) -> Self;
+    fn new_promoting_capture(from: P::Square, to: P::Square, promotion: P::Piece) -> Self;
+
     fn from_simple_move(simple_move: Self::SimpleChessMove) -> Self;
     fn simple_move(&self) -> Self::SimpleChessMove;
     fn promotion(&self) -> P::Piece;
@@ -25,6 +31,4 @@ pub trait ChessMove<P: Position>: SimpleChessMove<P> {
     fn is_king_castle(&self) -> bool;
     fn is_queen_castle(&self) -> bool;
     fn is_en_passant_capture(&self) -> bool;
-    fn set_capture(&mut self);
-    fn set_promotion(&mut self, promotion: P::Piece);
 }
