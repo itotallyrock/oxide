@@ -74,6 +74,8 @@ mod test {
         assert_eq!(pawn_west_attacks::<OxidePosition>(OxideBitboard(0x100000), OxideSide::Black), OxideBitboard(0x800));
         assert_eq!(pawn_west_attacks::<OxidePosition>(OxideBitboard(0x20000), OxideSide::Black), OxideBitboard(0x100));
         assert_eq!(pawn_west_attacks::<OxidePosition>(OxideBitboard(0x1000000), OxideSide::Black), OxideBitboard::EMPTY);
+        assert_eq!(pawn_west_attacks::<OxidePosition>(OxideBitboard(0xff00), OxideSide::White), OxideBitboard(0x7f0000));
+        assert_eq!(pawn_west_attacks::<OxidePosition>(OxideBitboard(0xff000000000000), OxideSide::Black), OxideBitboard(0x7f0000000000));
     }
 
     #[test]
@@ -86,6 +88,8 @@ mod test {
         assert_eq!(pawn_east_attacks::<OxidePosition>(OxideBitboard(0x100000), OxideSide::Black), OxideBitboard(0x2000));
         assert_eq!(pawn_east_attacks::<OxidePosition>(OxideBitboard(0x20000000), OxideSide::Black), OxideBitboard(0x400000));
         assert_eq!(pawn_east_attacks::<OxidePosition>(OxideBitboard(0x800000000000), OxideSide::Black), OxideBitboard::EMPTY);
+        assert_eq!(pawn_east_attacks::<OxidePosition>(OxideBitboard(0xff00), OxideSide::White), OxideBitboard(0xfe0000));
+        assert_eq!(pawn_east_attacks::<OxidePosition>(OxideBitboard(0xff000000000000), OxideSide::Black), OxideBitboard(0xfe0000000000));
     }
 }
 
