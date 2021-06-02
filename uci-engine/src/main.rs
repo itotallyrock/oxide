@@ -13,8 +13,6 @@ fn main() {
         println!("{}", x);
     }
 
-    let mut t = OxideMove::new(E7, F8);
-    t.set_capture();
-    t.set_promotion(OxidePiece::Queen);
-    println!("{} {} {} {}", OxideMove::WHITE_KING_CASTLE, OxideMove::new(E7, F8), t, t.simple_move());
+    let mut t = OxideMove::new_promoting_capture(E7, F8, OxidePiece::Queen);
+    println!("{} {} {}", OxideMove::WHITE_KING_CASTLE, OxideMove::new(E7, F8), t);
 }
