@@ -1,11 +1,23 @@
-use crate::engine::zobrist::OxideZobristHasher;
-use interface::game::IdempotentBoardState;
-use crate::game::{OxidePiece, OxideBitboard, OxideSquare, OxideCastleRights};
+use crate::engine::zobrist::{OxideZobristHasher, BASE_KEY};
+use interface::game::{PieceArrangement, SimpleChessMove, ChessMove, Side, BoardMask, CastleRights, Piece, SidedPiece, Square, Position};
+use crate::game::{OxidePiece, OxideBitboard, OxideSquare, OxideCastleRights, OxideSide, OxideSidedPiece, OxideMove, OxideSimpleMove, OxideIllegalMoveError};
 use crate::engine::position::OxidePosition;
 use std::fmt::Debug;
+use std::error::Error;
+use crate::engine::OxideFenParseError;
+use std::hash::{Hash, Hasher};
+use interface::engine::{IdempotentBoardState, CachedBoardState, BoardState, Board};
 
 #[derive(Copy, Clone, Debug)]
-pub struct OxideIdempotentBoardState {
+pub struct OxideBoardState {
+    // Cached board state
+    white_pinning: OxideBitboard,
+    white_blocking: OxideBitboard,
+    black_pinning: OxideBitboard,
+    black_blocking: OxideBitboard,
+    checkers: OxideBitboard,
+    check_piece_masks: [OxideBitboard; 6],
+    // Idempotent state
     zobrist_hasher: OxideZobristHasher,
     castle_rights: OxideCastleRights,
     en_passant_square: Option<OxideSquare>,
@@ -17,21 +29,11 @@ pub struct OxideIdempotentBoardState {
 pub struct OxideBoard {
     // Positional information (anything in a FEN)
     position: OxidePosition,
-    // Mask of white pinning pieces
-    white_pinning: OxideBitboard,
-    // Whites pieces blocking a pin on the king
-    white_blocking: OxideBitboard,
-    // Mask of black pinning pieces
-    black_pinning: OxideBitboard,
-    // Blacks pieces blocking a pin on the king
-    black_blocking: OxideBitboard,
-    // Mask of pieces currently giving check
-    checkers: OxideBitboard,
-    // Masks for each piece type that could give check to other side
-    check_piece_masks: [OxideBitboard; 6],
+    // Board state
+    state: OxideBoardState,
 }
 
-impl const IdempotentBoardState<OxidePosition> for OxideIdempotentBoardState {
+impl const IdempotentBoardState<OxidePosition> for OxideBoardState {
     type BoardHasher = OxideZobristHasher;
 
     #[inline]
@@ -56,76 +58,129 @@ impl const IdempotentBoardState<OxidePosition> for OxideIdempotentBoardState {
     }
 }
 
-/*
+impl CachedBoardState<OxidePosition> for OxideBoardState {
+    #[inline]
+    fn pinning_mask(&self, side: OxideSide) -> OxideBitboard {
+        if side.is_white() {
+            self.white_pinning
+        } else {
+            self.black_pinning
+        }
+    }
+    #[inline]
+    fn blocking_mask(&self, side: OxideSide) -> OxideBitboard {
+        if side.is_white() {
+            self.white_blocking
+        } else {
+            self.black_blocking
+        }
+    }
+    #[inline]
+    fn checkers_mask(&self) -> OxideBitboard {
+        self.checkers
+    }
+    #[inline]
+    fn piece_check_mask(&self, piece: OxidePiece) -> OxideBitboard {
+        match piece {
+            OxidePiece::Pawn => self.check_piece_masks[0],
+            OxidePiece::Knight => self.check_piece_masks[1],
+            OxidePiece::Bishop => self.check_piece_masks[2],
+            OxidePiece::Rook => self.check_piece_masks[3],
+            OxidePiece::Queen => self.check_piece_masks[4],
+            OxidePiece::King => self.check_piece_masks[5],
+            OxidePiece::Empty => panic!("Can't get piece checks for empty piece"),
+        }
+    }
+}
+
+impl BoardState<OxidePosition> for OxideBoardState {
+    fn new(position: &OxidePosition) -> Self {
+        let state = Self {
+            white_pinning: OxideBitboard::EMPTY,
+            white_blocking: OxideBitboard::EMPTY,
+            black_pinning: OxideBitboard::EMPTY,
+            black_blocking: OxideBitboard::EMPTY,
+            checkers: OxideBitboard::EMPTY,
+            check_piece_masks: [OxideBitboard::EMPTY; 6],
+            zobrist_hasher: OxideZobristHasher(BASE_KEY),
+            castle_rights: position.castle_rights(),
+            en_passant_square: position.en_passant_square(),
+            captured_piece: OxidePiece::Empty,
+            halfmove_clock: position.halfmove_clock() as u8
+        };
+
+        // TODO: Call something to add pins and blocks to state
+        // TODO: Call something to add checkers and update check_piece_masks to state
+
+        state
+    }
+}
+
+impl Board<OxidePosition> for OxideBoard {
+    type BoardState = OxideBoardState;
+    type SimpleMove = OxideSimpleMove;
+    type Move = OxideMove;
+    type IllegalMoveError = OxideIllegalMoveError;
+    type UndoMoveError = OxideIllegalMoveError;
+
+    fn new(position: OxidePosition) -> Self {
+        Self {
+            state: OxideBoardState::new(&position),
+            position,
+        }
+    }
+
+    #[inline]
+    fn state(&self) -> &Self::BoardState {
+        &self.state
+    }
+
+    fn position(&self) -> &OxidePosition {
+        &self.position
+    }
+
+    fn make_move(&mut self, chess_move: Self::Move) -> Result<Self::BoardState, Self::IllegalMoveError> {
+        todo!()
+    }
+
+    fn make_move_unchecked(&mut self, chess_move: Self::Move) -> Self::BoardState {
+        todo!()
+    }
+
+    fn undo_move(&mut self, chess_move: Self::Move, previous_state: Self::BoardState) -> Result<(), Self::UndoMoveError> {
+        todo!()
+    }
+
+    fn undo_move_unchecked(&mut self, chess_move: Self::Move, previous_state: Self::BoardState) {
+        todo!()
+    }
+    #[inline]
+    fn in_check(&self) -> bool {
+        self.state.checkers_mask() != OxideBitboard::EMPTY
+    }
+
+    fn is_discovery(&self, chess_move: &Self::Move) -> bool {
+        todo!()
+    }
+
+    fn gives_check(&self, chess_move: &Self::Move) -> bool {
+        todo!()
+    }
+
+    fn is_legal(&self, chess_move: &Self::Move) -> bool {
+        // todo!()
+        true
+    }
+}
+
 impl Hash for OxideBoard {
+    #[inline]
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.position.hash(state);
     }
 }
 
-impl PieceArrangement<OxideSide, OxidePiece, OxideSidedPiece, OxideBitboard, OxideSquare> for OxideBoard {
-    const EMPTY: Self = Self {
-        position: OxidePosition::EMPTY,
-        state: OxideIdempotentBoardState {
-            zobrist_hasher: OxideZobristHasher(BASE_KEY),
-            castle_rights: OxideCastleRights::None,
-            en_passant_square: None,
-            captured_piece: OxidePiece::Empty,
-            halfmove_clock: 0
-        },
-        white_pinning: 0,
-        white_blocking: 0,
-        black_pinning: 0,
-        black_blocking: 0,
-        checkers: 0,
-        check_piece_masks: [0; 6]
-    };
-
-    fn piece_mask(&self, piece: OxidePiece) -> OxideBitboard {
-        todo!()
-    }
-
-    fn sided_piece_mask(&self, sided_piece: OxideSidedPiece) -> OxideBitboard {
-        todo!()
-    }
-
-    fn occupied(&self) -> OxideBitboard {
-        todo!()
-    }
-
-    fn empty(&self) -> OxideBitboard {
-        todo!()
-    }
-
-    fn piece_mask_for_side(&self, side: OxideSide) -> OxideBitboard {
-        todo!()
-    }
-
-    fn piece_on_square(&self, square: OxideSquare) -> OxidePiece {
-        todo!()
-    }
-
-    fn side_on_square(&self, square: OxideSquare) -> Option<OxideSide> {
-        todo!()
-    }
-
-    fn king_square(&self, side: OxideSide) -> OxideSquare {
-        todo!()
-    }
-
-    fn add_piece(&mut self, piece: OxideSidedPiece, to_square: OxideSquare) {
-        todo!()
-    }
-
-    fn remove_piece(&mut self, piece: OxideSidedPiece, from_square: OxideSquare) {
-        todo!()
-    }
-
-    fn move_piece(&mut self, piece: OxideSidedPiece, to_square: OxideSquare, from_square: OxideSquare) {
-        todo!()
-    }
-}
-
+/*
 impl Position<OxideSide, OxidePiece, OxideSidedPiece, OxideBitboard, OxideSquare, OxideCastleRights> for OxideBoard {
     type FenParseError = OxideFenParseError;
 

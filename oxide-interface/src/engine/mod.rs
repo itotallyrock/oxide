@@ -6,3 +6,4 @@ mod position;
 
 pub use score::OxideScore;
 pub use position::{OxideFenParseError, OxidePieceArrangement, OxidePosition};
+pub use board::{OxideBoard, OxideBoardState};
