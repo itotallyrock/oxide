@@ -125,14 +125,7 @@ mod test {
 
     #[test]
     fn from_simple_move_works() {
-        for &from_square in &OxideSquare::SQUARES {
-            for &to_square in &OxideSquare::SQUARES {
-                if from_square != to_square {
-                    // Make sure from_simple_move matches new with the same squares
-                    assert_eq!(OxideMove::from_simple_move(OxideSimpleMove::new(from_square, to_square)), OxideMove::new(from_square, to_square), "from_simple_move(A, B) doesn't match new(A, B)");
-                }
-            }
-        }
+        todo!("Test a bunch of simple moves that are actually side-effect moves")
     }
 
     #[test]
@@ -296,119 +289,6 @@ mod test {
         assert!(!OxideMove::WHITE_KING_CASTLE.is_en_passant_capture());
         assert!(!OxideMove::BLACK_KING_CASTLE.is_en_passant_capture());
     }
-
-    /*
-    #[test]
-    fn promotes_works() {
-        assert!(!OxideMoveType::Quiet.promotes());
-        assert!(!OxideMoveType::DoublePawnPush.promotes());
-        assert!(!OxideMoveType::KingSideCastle.promotes());
-        assert!(!OxideMoveType::QueenSideCastle.promotes());
-        assert!(!OxideMoveType::Capture.promotes());
-        assert!(!OxideMoveType::EnPassantCapture.promotes());
-        assert!(OxideMoveType::KnightPromotion.promotes());
-        assert!(OxideMoveType::BishopPromotion.promotes());
-        assert!(OxideMoveType::RookPromotion.promotes());
-        assert!(OxideMoveType::QueenPromotion.promotes());
-        assert!(OxideMoveType::KnightPromotingCapture.promotes());
-        assert!(OxideMoveType::BishopPromotingCapture.promotes());
-        assert!(OxideMoveType::RookPromotingCapture.promotes());
-        assert!(OxideMoveType::QueenPromotingCapture.promotes());
-    }
-
-    #[test]
-    fn captures_works() {
-        assert!(OxideMoveType::EnPassantCapture.captures());
-        assert!(OxideMoveType::BishopPromotingCapture.captures());
-        assert!(OxideMoveType::KnightPromotingCapture.captures());
-        assert!(OxideMoveType::QueenPromotingCapture.captures());
-        assert!(OxideMoveType::RookPromotingCapture.captures());
-        assert!(OxideMoveType::Capture.captures());
-        // Non captures are false
-        assert!(!OxideMoveType::BishopPromotion.captures());
-        assert!(!OxideMoveType::KnightPromotion.captures());
-        assert!(!OxideMoveType::QueenPromotion.captures());
-        assert!(!OxideMoveType::RookPromotion.captures());
-        assert!(!OxideMoveType::Quiet.captures());
-        assert!(!OxideMoveType::QueenSideCastle.captures());
-        assert!(!OxideMoveType::KingSideCastle.captures());
-        assert!(!OxideMoveType::DoublePawnPush.captures());
-    }
-
-    #[test]
-    fn promotion_works() {
-        // Non promoting moves are none
-        assert_eq!(OxideMoveType::QueenSideCastle.promotion(), OxidePiece::Empty);
-        assert_eq!(OxideMoveType::KingSideCastle.promotion(), OxidePiece::Empty);
-        assert_eq!(OxideMoveType::Quiet.promotion(), OxidePiece::Empty);
-        assert_eq!(OxideMoveType::Capture.promotion(), OxidePiece::Empty);
-        assert_eq!(OxideMoveType::EnPassantCapture.promotion(), OxidePiece::Empty);
-        assert_eq!(OxideMoveType::DoublePawnPush.promotion(), OxidePiece::Empty);
-        // Promotions are their pieces
-        assert_eq!(OxideMoveType::BishopPromotingCapture.promotion(), OxidePiece::Bishop);
-        assert_eq!(OxideMoveType::KnightPromotingCapture.promotion(), OxidePiece::Knight);
-        assert_eq!(OxideMoveType::QueenPromotingCapture.promotion(), OxidePiece::Queen);
-        assert_eq!(OxideMoveType::RookPromotingCapture.promotion(), OxidePiece::Rook);
-        assert_eq!(OxideMoveType::BishopPromotion.promotion(), OxidePiece::Bishop);
-        assert_eq!(OxideMoveType::KnightPromotion.promotion(), OxidePiece::Knight);
-        assert_eq!(OxideMoveType::QueenPromotion.promotion(), OxidePiece::Queen);
-        assert_eq!(OxideMoveType::RookPromotion.promotion(), OxidePiece::Rook);
-    }
-
-    #[test]
-    fn add_capture_works() {
-        // Non captures become their capture counter-parts
-        assert_eq!(OxideMoveType::Quiet.add_capture(), OxideMoveType::Capture);
-        assert_eq!(OxideMoveType::RookPromotion.add_capture(), OxideMoveType::RookPromotingCapture);
-        assert_eq!(OxideMoveType::BishopPromotion.add_capture(), OxideMoveType::BishopPromotingCapture);
-        assert_eq!(OxideMoveType::QueenPromotion.add_capture(), OxideMoveType::QueenPromotingCapture);
-        assert_eq!(OxideMoveType::KnightPromotion.add_capture(), OxideMoveType::KnightPromotingCapture);
-        // Captures keep their captures
-        assert_eq!(OxideMoveType::Capture.add_capture(), OxideMoveType::Capture);
-        assert_eq!(OxideMoveType::EnPassantCapture.add_capture(), OxideMoveType::EnPassantCapture);
-        assert_eq!(OxideMoveType::RookPromotingCapture.add_capture(), OxideMoveType::RookPromotingCapture);
-        assert_eq!(OxideMoveType::BishopPromotingCapture.add_capture(), OxideMoveType::BishopPromotingCapture);
-        assert_eq!(OxideMoveType::QueenPromotingCapture.add_capture(), OxideMoveType::QueenPromotingCapture);
-        assert_eq!(OxideMoveType::KnightPromotingCapture.add_capture(), OxideMoveType::KnightPromotingCapture);
-    }
-
-    #[test]
-    #[should_panic]
-    fn add_capture_double_pawn_push_panics() {
-        OxideMoveType::DoublePawnPush.add_capture();
-    }
-
-    #[test]
-    #[should_panic]
-    fn add_capture_king_side_castle_panics() {
-        OxideMoveType::KingSideCastle.add_capture();
-    }
-
-    #[test]
-    #[should_panic]
-    fn add_capture_queen_side_castle_panics() {
-        OxideMoveType::QueenSideCastle.add_capture();
-    }
-
-    #[test]
-    fn remove_capture_works() {
-        // Non captures become remain the same
-        assert_eq!(OxideMoveType::Quiet.remove_capture(), OxideMoveType::Quiet);
-        assert_eq!(OxideMoveType::RookPromotion.remove_capture(), OxideMoveType::RookPromotion);
-        assert_eq!(OxideMoveType::BishopPromotion.remove_capture(), OxideMoveType::BishopPromotion);
-        assert_eq!(OxideMoveType::QueenPromotion.remove_capture(), OxideMoveType::QueenPromotion);
-        assert_eq!(OxideMoveType::KnightPromotion.remove_capture(), OxideMoveType::KnightPromotion);
-        assert_eq!(OxideMoveType::KingSideCastle.remove_capture(), OxideMoveType::KingSideCastle);
-        assert_eq!(OxideMoveType::QueenSideCastle.remove_capture(), OxideMoveType::QueenSideCastle);
-        assert_eq!(OxideMoveType::DoublePawnPush.remove_capture(), OxideMoveType::DoublePawnPush);
-        // CapturesOxideMoveType their captures
-        assert_eq!(OxideMoveType::Capture.remove_capture(), OxideMoveType::Quiet);
-        assert_eq!(OxideMoveType::EnPassantCapture.remove_capture(), OxideMoveType::Quiet);
-        assert_eq!(OxideMoveType::RookPromotingCapture.remove_capture(), OxideMoveType::RookPromotion);
-        assert_eq!(OxideMoveType::BishopPromotingCapture.remove_capture(), OxideMoveType::BishopPromotion);
-        assert_eq!(OxideMoveType::QueenPromotingCapture.remove_capture(), OxideMoveType::QueenPromotion);
-        assert_eq!(OxideMoveType::KnightPromotingCapture.remove_capture(), OxideMoveType::KnightPromotion);
-    }*/
 
     #[test]
     fn castles_work() {

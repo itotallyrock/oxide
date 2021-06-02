@@ -11,7 +11,9 @@ use std::fmt::{Display, Formatter, Result as FormatResult};
 use crate::game::{OxideSquare, OxidePiece};
 use crate::game::square::OxideSquare::{E1, G1, E8, G8, C1, C8};
 use crate::game::chess_move::move_type::OxideMoveType;
-use crate::engine::OxidePosition;
+use crate::engine::{OxidePosition, OxideBoard};
+use interface::engine::Board;
+use std::error::Error;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum OxideIllegalMoveError {
@@ -30,6 +32,32 @@ pub enum OxideIllegalMoveError {
     InvalidKnightJump, // If a knight jump doesn't goto a valid knight square
     SelfCheck, // If a move would result in a check on yourself
     ThreeFoldRepetition, // When a move would result in a drawn game for threefold repetition
+}
+
+impl Display for OxideIllegalMoveError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FormatResult {
+        match self {
+            OxideIllegalMoveError::MovingPieceForWrongSide => write!(f, "Attempting to move piece for the wrong side"),
+            OxideIllegalMoveError::CapturingOwnPiece => write!(f, "Attempting to capture one's own piece"),
+            OxideIllegalMoveError::NonCapturingCapture => write!(f, "Move was classified as a capture but didn't capture"),
+            OxideIllegalMoveError::MovingFromEmptySquare => write!(f, "Missing piece on from square"),
+            OxideIllegalMoveError::CastlingWithoutPermission => write!(f, "Castling without permission"),
+            OxideIllegalMoveError::CastlingThroughAttack => write!(f, "Castling path travels through an attacked square"),
+            OxideIllegalMoveError::HorizontalPawnPush => write!(f, "Attempting to move pawn sideways"),
+            OxideIllegalMoveError::VerticalPawnCapture => write!(f, "Attempting to make a pawn capture without moving pawn sideways"),
+            OxideIllegalMoveError::InvalidPawnPush => write!(f, "Pawn is pushed too far"),
+            OxideIllegalMoveError::NonExistentEnPassantCapture => write!(f, "Attempting to capture en-passant without an en-passant pawn"),
+            OxideIllegalMoveError::InvalidDiagonalMovement => write!(f, "Piece cannot legally reach that square via diagonal movement"),
+            OxideIllegalMoveError::InvalidCardinalMovement => write!(f, "Piece cannot legally reach that square via cardinal movement"),
+            OxideIllegalMoveError::InvalidKnightJump => write!(f, "Knight jump to a square unreachable by knight"),
+            OxideIllegalMoveError::SelfCheck => write!(f, "Ignoring check or self check"),
+            OxideIllegalMoveError::ThreeFoldRepetition => write!(f, "Three-fold repetition draw"),
+        }
+    }
+}
+
+impl Error for OxideIllegalMoveError {
+
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -97,6 +125,7 @@ fn promotion_piece_to_move_type(promotion: OxidePiece, capture: bool) -> OxideMo
 
 impl ChessMove<OxidePosition> for OxideMove {
     type SimpleChessMove = OxideSimpleMove;
+    type Board = OxideBoard;
     const WHITE_KING_CASTLE: Self = Self {
         simple_move: OxideSimpleMove { from: E1, to: G1 },
         move_type: OxideMoveType::KingSideCastle
@@ -164,16 +193,10 @@ impl ChessMove<OxidePosition> for OxideMove {
         }
     }
     #[inline]
-    fn from_simple_move(simple_move: OxideSimpleMove) -> Self {
+    fn from_simple_move(simple_move: OxideSimpleMove, board: &OxideBoard) -> Self {
         debug_assert_ne!(simple_move.from, simple_move.to, "Attempting to create move from simple move which goes to the same square");
-        Self {
-            simple_move,
-            move_type: OxideMoveType::Quiet,
-        }
-    }
-    #[inline]
-    fn simple_move(&self) -> OxideSimpleMove {
-        self.simple_move
+
+        todo!("Parse move type and check legality of move")
     }
     #[inline]
     fn promotion(&self) -> OxidePiece {
