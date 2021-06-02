@@ -25,15 +25,13 @@ mod test {
 
 #[cfg(test)]
 mod bench {
-    // Local imports
     use super::*;
 
-    // External test for benchmarking
     extern crate test;
     use test::Bencher;
     use oxide_interface::game::OxideSquare::E3;
-    use interface::game::Square;
     use oxide_interface::engine::OxidePosition;
+    use interface::game::Square;
 
     #[bench]
     fn knight_attack_bench(bencher: &mut Bencher) {

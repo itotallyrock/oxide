@@ -3,6 +3,7 @@
 members = [
     "interface",
     "oxide-interface",
+    "attacks",
     "move-gen",
     "uci-engine",
 ]
