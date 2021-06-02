@@ -102,8 +102,8 @@ impl PieceArrangement<OxidePosition> for OxidePosition {
         self.arrangement.empty()
     }
     #[inline]
-    fn piece_mask_for_side(&self, side: OxideSide) -> OxideBitboard {
-        self.arrangement.piece_mask_for_side(side)
+    fn mask_for_side(&self, side: OxideSide) -> OxideBitboard {
+        self.arrangement.mask_for_side(side)
     }
     #[inline]
     fn piece_on_square(&self, square: OxideSquare) -> OxidePiece {
@@ -336,8 +336,8 @@ mod test {
         assert_eq!(position.castle_rights(), OxideCastleRights::All);
         assert_eq!(position.halfmove_clock(), 0);
         assert_eq!(position.fullmove_count(), 1);
-        assert_eq!(position.piece_mask_for_side(OxideSide::White), OxideBitboard(0xFFFFu64));
-        assert_eq!(position.piece_mask_for_side(OxideSide::Black), OxideBitboard(0xFFFF000000000000u64));
+        assert_eq!(position.mask_for_side(OxideSide::White), OxideBitboard(0xFFFFu64));
+        assert_eq!(position.mask_for_side(OxideSide::Black), OxideBitboard(0xFFFF000000000000u64));
         assert_eq!(position.sided_piece_mask(OxideSidedPiece::WhitePawn), OxideBitboard(0xFF00u64));
         assert_eq!(position.sided_piece_mask(OxideSidedPiece::BlackPawn), OxideBitboard(0xFF000000000000u64));
         assert_eq!(position.sided_piece_mask(OxideSidedPiece::WhiteRook), OxideBitboard(0x81u64));

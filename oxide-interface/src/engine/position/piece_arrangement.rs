@@ -91,7 +91,7 @@ impl PieceArrangement<OxidePosition> for OxidePieceArrangement {
         !self.occupied()
     }
     #[inline]
-    fn piece_mask_for_side(&self, side: OxideSide) -> OxideBitboard {
+    fn mask_for_side(&self, side: OxideSide) -> OxideBitboard {
         if side.is_white() {
             self.white
         } else {
@@ -131,7 +131,7 @@ impl PieceArrangement<OxidePosition> for OxidePieceArrangement {
     }
     #[inline]
     fn king_square(&self, side: OxideSide) -> OxideSquare {
-        (self.kings & self.piece_mask_for_side(side)).into_iter().next().expect("Attempting to get king square on board without king")
+        (self.kings & self.mask_for_side(side)).into_iter().next().expect("Attempting to get king square on board without king")
     }
     #[inline]
     fn add_piece(&mut self, sided_piece: OxideSidedPiece, to_square: OxideSquare) {
