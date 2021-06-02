@@ -222,35 +222,35 @@ mod test {
 
     #[test]
     fn remove_side_works() {
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhitePawn), OxidePiece::Pawn);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackPawn), OxidePiece::Pawn);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteKnight), OxidePiece::Knight);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackKnight), OxidePiece::Knight);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteBishop), OxidePiece::Bishop);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackBishop), OxidePiece::Bishop);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteRook), OxidePiece::Rook);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackRook), OxidePiece::Rook);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteQueen), OxidePiece::Queen);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackQueen), OxidePiece::Queen);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteKing), OxidePiece::King);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackKing), OxidePiece::King);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::unsided_piece(&OxideSidedPiece::Empty), OxidePiece::Empty);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhitePawn), OxidePiece::Pawn);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackPawn), OxidePiece::Pawn);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteKnight), OxidePiece::Knight);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackKnight), OxidePiece::Knight);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteBishop), OxidePiece::Bishop);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackBishop), OxidePiece::Bishop);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteRook), OxidePiece::Rook);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackRook), OxidePiece::Rook);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteQueen), OxidePiece::Queen);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackQueen), OxidePiece::Queen);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::WhiteKing), OxidePiece::King);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::BlackKing), OxidePiece::King);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::unsided_piece(&OxideSidedPiece::Empty), OxidePiece::Empty);
     }
 
     #[test]
     fn side_of_sided_works() {
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhitePawn), OxideSide::White);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackPawn), OxideSide::Black);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhiteKnight), OxideSide::White);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackKnight), OxideSide::Black);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhiteBishop), OxideSide::White);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackBishop), OxideSide::Black);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhiteRook), OxideSide::White);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackRook), OxideSide::Black);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhiteQueen), OxideSide::White);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackQueen), OxideSide::Black);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::WhiteKing), OxideSide::White);
-        assert_eq!(<OxideSidedPiece as SidedPiece::<OxidePosition>>::side(&OxideSidedPiece::BlackKing), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::WhitePawn), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::BlackPawn), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::WhiteKnight), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::BlackKnight), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::WhiteBishop), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::BlackBishop), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::WhiteRook), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::BlackRook), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::WhiteQueen), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::BlackQueen), OxideSide::Black);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::WhiteKing), OxideSide::White);
+        assert_eq!(<OxideSidedPiece as SidedPiece<OxidePosition>>::side(&OxideSidedPiece::BlackKing), OxideSide::Black);
     }
 
     #[should_panic]

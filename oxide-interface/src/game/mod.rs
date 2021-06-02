@@ -10,5 +10,5 @@ pub use square::OxideSquare;
 pub use oxide_bitboard::OxideBitboard;
 pub use side::OxideSide;
 pub use piece::{OxidePiece, OxideSidedPiece};
-pub use chess_move::{OxideSimpleMove, OxideMove};
+pub use chess_move::{OxideSimpleMove, OxideMove, OxideIllegalMoveError};
 pub use castle::OxideCastleRights;

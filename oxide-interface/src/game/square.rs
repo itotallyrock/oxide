@@ -182,8 +182,8 @@ mod test {
 
     #[test]
     fn from_offset_works() {
-        assert_eq!(<OxideSquare as Square::<OxidePosition>>::from_offset(64), None);
-        assert_eq!(<OxideSquare as Square::<OxidePosition>>::from_offset(SquareOffset::MAX), None);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::from_offset(64), None);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::from_offset(SquareOffset::MAX), None);
         // assert_eq!(Square::<OxideBitboard, 64>::from_offset(SquareOffset::MAX), None);
         for square in Square::<OxidePosition>::SQUARES.iter().copied::<OxideSquare>() {
             let offset = Square::<OxidePosition>::offset(&square);
@@ -193,59 +193,59 @@ mod test {
 
     #[test]
     fn from_mask_works() {
-        assert_eq!(<OxideSquare as Square::<OxidePosition>>::from_mask(OxideBitboard(0)), None);
-        assert_eq!(<OxideSquare as Square::<OxidePosition>>::from_mask(OxideBitboard(0x10000000)), Some(E4));
-        assert_eq!(<OxideSquare as Square::<OxidePosition>>::from_mask(OxideBitboard::FULL), Some(A1));
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::from_mask(OxideBitboard(0)), None);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::from_mask(OxideBitboard(0x10000000)), Some(E4));
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::from_mask(OxideBitboard::FULL), Some(A1));
     }
 
     #[test]
     fn from_mask_matches_to_mask() {
         for square in OxideSquare::SQUARES {
-            assert_eq!(<OxideSquare as Square::<OxidePosition>>::from_mask(<OxideSquare as Square::<OxidePosition>>::to_mask(&square)), Some(square));
+            assert_eq!(<OxideSquare as Square<OxidePosition>>::from_mask(<OxideSquare as Square::<OxidePosition>>::to_mask(&square)), Some(square));
         }
     }
 
     #[test]
     fn to_bitboard_works() {
         // Test corners are correct
-        assert_eq!(Square::<OxidePosition>::to_mask(&A1), OxideBitboard(0x1u64));
-        assert_eq!(Square::<OxidePosition>::to_mask(&H1), OxideBitboard(0x80u64));
-        assert_eq!(Square::<OxidePosition>::to_mask(&A8), OxideBitboard(0x100000000000000u64));
-        assert_eq!(Square::<OxidePosition>::to_mask(&H8), OxideBitboard(0x8000000000000000u64));
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::to_mask(&A1), OxideBitboard(0x1u64));
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::to_mask(&H1), OxideBitboard(0x80u64));
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::to_mask(&A8), OxideBitboard(0x100000000000000u64));
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::to_mask(&H8), OxideBitboard(0x8000000000000000u64));
         // Test something in the middle
-        assert_eq!(Square::<OxidePosition>::to_mask(&E3), OxideBitboard(0x100000u64));
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::to_mask(&E3), OxideBitboard(0x100000u64));
     }
 
     #[test]
     fn x_offset_works() {
-        assert_eq!(Square::<OxidePosition>::x_offset(&A1), 0);
-        assert_eq!(Square::<OxidePosition>::x_offset(&A3), 0);
-        assert_eq!(Square::<OxidePosition>::x_offset(&A8), 0);
-        assert_eq!(Square::<OxidePosition>::x_offset(&B2), 1);
-        assert_eq!(Square::<OxidePosition>::x_offset(&B8), 1);
-        assert_eq!(Square::<OxidePosition>::x_offset(&C4), 2);
-        assert_eq!(Square::<OxidePosition>::x_offset(&D4), 3);
-        assert_eq!(Square::<OxidePosition>::x_offset(&E1), 4);
-        assert_eq!(Square::<OxidePosition>::x_offset(&F7), 5);
-        assert_eq!(Square::<OxidePosition>::x_offset(&G3), 6);
-        assert_eq!(Square::<OxidePosition>::x_offset(&H3), 7);
-        assert_eq!(Square::<OxidePosition>::x_offset(&H8), 7);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&A1), 0);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&A3), 0);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&A8), 0);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&B2), 1);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&B8), 1);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&C4), 2);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&D4), 3);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&E1), 4);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&F7), 5);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&G3), 6);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&H3), 7);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::x_offset(&H8), 7);
     }
 
     #[test]
     fn y_offset_works() {
-        assert_eq!(Square::<OxidePosition>::y_offset(&A1), 0);
-        assert_eq!(Square::<OxidePosition>::y_offset(&A3), 2);
-        assert_eq!(Square::<OxidePosition>::y_offset(&A8), 7);
-        assert_eq!(Square::<OxidePosition>::y_offset(&B2), 1);
-        assert_eq!(Square::<OxidePosition>::y_offset(&B8), 7);
-        assert_eq!(Square::<OxidePosition>::y_offset(&C4), 3);
-        assert_eq!(Square::<OxidePosition>::y_offset(&D4), 3);
-        assert_eq!(Square::<OxidePosition>::y_offset(&E1), 0);
-        assert_eq!(Square::<OxidePosition>::y_offset(&F7), 6);
-        assert_eq!(Square::<OxidePosition>::y_offset(&G3), 2);
-        assert_eq!(Square::<OxidePosition>::y_offset(&H3), 2);
-        assert_eq!(Square::<OxidePosition>::y_offset(&H8), 7);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&A1), 0);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&A3), 2);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&A8), 7);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&B2), 1);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&B8), 7);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&C4), 3);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&D4), 3);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&E1), 0);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&F7), 6);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&G3), 2);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&H3), 2);
+        assert_eq!(<OxideSquare as Square<OxidePosition>>::y_offset(&H8), 7);
     }
 
 
