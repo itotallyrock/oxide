@@ -4,7 +4,7 @@ use std::ops::{BitOr, BitAnd, Not};
 use std::convert::TryFrom;
 
 /// Castle rights representation (which side can still legally castle and queen-side vs king-side)
-pub trait CastleRights<P: Position>: Sized + Debug + Display + Eq + PartialEq + BitOr + BitAnd + Not {
+pub trait CastleRights<P: Position>: Sized + Copy + Debug + Display + Eq + PartialEq + BitOr + BitAnd + Not {
     /// No castle rights either side (-)
     const NONE: Self;
     /// White king-side (K)
@@ -50,4 +50,6 @@ pub trait CastleRights<P: Position>: Sized + Debug + Display + Eq + PartialEq + 
     fn insert(&mut self, other: Self);
     /// Remove a set of castle rights from another
     fn remove(&mut self, other: Self);
+    /// Get a board mask for the path required for a single castle right
+    fn castle_path(&self) -> P::BoardMask;
 }

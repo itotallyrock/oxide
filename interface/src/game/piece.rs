@@ -2,7 +2,7 @@ use crate::game::Position;
 use std::fmt::{Debug, Display};
 
 /// A board piece without side (ie. rook, bishop, queen, etc)
-pub trait Piece<P: Position>: Sized + Debug + Display + Default + Eq + PartialEq + From<char> {
+pub trait Piece<P: Position>: Sized + Copy + Debug + Display + Default + Eq + PartialEq + From<char> {
     /// List of pieces (excluding empty) for iteration
     const PIECES: [Self; 6];
     /// Piece representing a pawn
@@ -25,7 +25,7 @@ pub trait Piece<P: Position>: Sized + Debug + Display + Default + Eq + PartialEq
 }
 
 /// A side's piece (ie. white rook)
-pub trait SidedPiece<P: Position>: Sized + Debug + Display + Default + Eq + PartialEq + From<char> + Into<char> {
+pub trait SidedPiece<P: Position>: Sized + Copy + Debug + Display + Default + Eq + PartialEq + From<char> + Into<char> {
     /// List of aLl pieces (excluding empty) for iteration
     const PIECES: [Self; 12];
     /// Piece representing a white pawn
