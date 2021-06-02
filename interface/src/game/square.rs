@@ -3,6 +3,7 @@ use std::fmt::Display;
 use crate::game::{Shiftable, Position};
 use crate::types::SquareOffset;
 
+/// Square representation, a coordinate system for the board
 pub trait Square<P: Position>: Display + Shiftable + Copy + PartialOrd + Ord + Eq + PartialEq {
     /// List of all available squares
     const SQUARES: [Self; 64];
