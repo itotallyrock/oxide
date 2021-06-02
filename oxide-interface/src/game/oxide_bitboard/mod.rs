@@ -51,14 +51,14 @@ impl const BoardMask<OxidePosition> for OxideBitboard {
     const G_FILE: Self = Self(Self::F_FILE.0 << 1 & NOT_A_FILE.0); // Self::east_shift(Self::F_FILE);
     const H_FILE: Self = Self(Self::G_FILE.0 << 1 & NOT_A_FILE.0); // Self::east_shift(Self::G_FILE);
 
-    const RANK_1: Self = !Self::north_shift(Self::FULL);
-    const RANK_2: Self = Self::north_shift(Self::RANK_1);
-    const RANK_3: Self = Self::north_shift(Self::RANK_2);
-    const RANK_4: Self = Self::north_shift(Self::RANK_3);
-    const RANK_5: Self = Self::north_shift(Self::RANK_4);
-    const RANK_6: Self = Self::north_shift(Self::RANK_5);
-    const RANK_7: Self = Self::north_shift(Self::RANK_6);
-    const RANK_8: Self = Self::north_shift(Self::RANK_7);
+    const RANK_1: Self = Self(!(Self::FULL.0 << 8));// !Self::north_shift(Self::FULL);
+    const RANK_2: Self = Self(Self::RANK_1.0 << 8);// Self::north_shift(Self::RANK_1);
+    const RANK_3: Self = Self(Self::RANK_2.0 << 8);// Self::north_shift(Self::RANK_2);
+    const RANK_4: Self = Self(Self::RANK_3.0 << 8);// Self::north_shift(Self::RANK_3);
+    const RANK_5: Self = Self(Self::RANK_4.0 << 8);// Self::north_shift(Self::RANK_4);
+    const RANK_6: Self = Self(Self::RANK_5.0 << 8);// Self::north_shift(Self::RANK_5);
+    const RANK_7: Self = Self(Self::RANK_6.0 << 8);// Self::north_shift(Self::RANK_6);
+    const RANK_8: Self = Self(Self::RANK_7.0 << 8);// Self::north_shift(Self::RANK_7);
 
     // Fills
     #[inline]
