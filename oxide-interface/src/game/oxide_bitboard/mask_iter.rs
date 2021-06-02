@@ -13,14 +13,18 @@ impl Iterator for OxideBitboard {
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
-        println!("DIZER {} == {} ({})", self.0, 0, self.0 == 0);
         if self.0 == 0 {
             (0, Some(0))
         } else {
-            let ones = self.0.count_ones() as usize;
+            let ones = self.count() as usize;
 
             (ones, Some(ones))
         }
+    }
+
+    #[inline]
+    fn count(self) -> usize {
+        self.0.count_ones() as usize
     }
 }
 
