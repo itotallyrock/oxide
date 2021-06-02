@@ -8,6 +8,7 @@ mod test;
 mod bench;
 #[macro_use]
 mod fill_macros;
+mod line;
 
 use interface::game::{Shiftable, BoardMask};
 use std::fmt::{Formatter, Result as FormatResult, Debug};

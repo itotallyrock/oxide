@@ -1,8 +1,9 @@
 use crate::game::{Shiftable, Position};
 use std::ops::{BitOr, BitXor, Not, BitAnd, BitOrAssign, BitAndAssign, BitXorAssign};
 use std::fmt::{UpperHex, LowerHex, Debug};
+use crate::game::line::LineMask;
 
-pub trait BoardMask<P: Position>: Shiftable + UpperHex + LowerHex + BitOr<Output=Self> + BitXor<Output=Self> + BitAnd<Output=Self> + Not<Output=Self> + BitOrAssign + BitAndAssign + BitXorAssign + Eq + PartialEq + Debug + IntoIterator + Copy + Clone + Iterator<Item=P::Square> {
+pub trait BoardMask<P: Position>: Shiftable + LineMask<P> + UpperHex + LowerHex + BitOr<Output=Self> + BitXor<Output=Self> + BitAnd<Output=Self> + Not<Output=Self> + BitOrAssign + BitAndAssign + BitXorAssign + Eq + PartialEq + Debug + IntoIterator + Copy + Clone + Iterator<Item=P::Square> {
     // First square (A1 mask)
     const SQUARE: Self;
     // Full board masks
