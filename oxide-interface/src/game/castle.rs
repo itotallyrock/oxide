@@ -1,5 +1,5 @@
-use interface::game::{CastleRights, Side};
-use crate::game::OxideSide;
+use interface::game::{CastleRights, Side, PieceArrangement, BoardMask};
+use crate::game::{OxideSide, OxideBitboard};
 use std::fmt::{Display, Formatter, Result as FormatResult};
 use std::ops::{BitAnd, BitOr, Not};
 use std::convert::TryFrom;
@@ -113,6 +113,31 @@ impl CastleRights<OxidePosition> for OxideCastleRights {
     #[inline]
     fn remove(&mut self, other: Self) {
         *self = *self & !other
+    }
+
+    fn castle_path(&self) -> OxideBitboard {
+        const WHITE_KING_CLEAR: OxideBitboard = OxideBitboard(0x60);
+        const WHITE_QUEEN_CLEAR: OxideBitboard = OxideBitboard(0xE);
+        const BLACK_KING_CLEAR: OxideBitboard = OxideBitboard(0x6000000000000000);
+        const BLACK_QUEEN_CLEAR: OxideBitboard = OxideBitboard(0xe00000000000000);
+        match *self {
+            OxideCastleRights::NONE => OxideBitboard::EMPTY,
+            OxideCastleRights::WHITE_KING => WHITE_KING_CLEAR,
+            OxideCastleRights::WHITE_QUEEN => WHITE_QUEEN_CLEAR,
+            OxideCastleRights::WHITE_ALL => WHITE_KING_CLEAR | WHITE_QUEEN_CLEAR,
+            OxideCastleRights::BLACK_KING => BLACK_KING_CLEAR,
+            OxideCastleRights::BOTH_KINGS => WHITE_KING_CLEAR | BLACK_KING_CLEAR,
+            OxideCastleRights::WHITE_QUEEN_BLACK_KING => WHITE_QUEEN_CLEAR | BLACK_KING_CLEAR,
+            OxideCastleRights::WHITE_ALL_BLACK_KING => WHITE_QUEEN_CLEAR | WHITE_KING_CLEAR | BLACK_KING_CLEAR,
+            OxideCastleRights::BLACK_QUEEN => BLACK_QUEEN_CLEAR,
+            OxideCastleRights::WHITE_KING_BLACK_QUEEN => WHITE_KING_CLEAR | BLACK_QUEEN_CLEAR,
+            OxideCastleRights::BOTH_QUEENS => WHITE_QUEEN_CLEAR | BLACK_QUEEN_CLEAR,
+            OxideCastleRights::WHITE_ALL_BLACK_QUEEN => WHITE_QUEEN_CLEAR | WHITE_KING_CLEAR | BLACK_QUEEN_CLEAR,
+            OxideCastleRights::BLACK_ALL => BLACK_QUEEN_CLEAR | BLACK_KING_CLEAR,
+            OxideCastleRights::BLACK_ALL_WHITE_KING => BLACK_QUEEN_CLEAR | BLACK_KING_CLEAR | WHITE_KING_CLEAR,
+            OxideCastleRights::BLACK_ALL_WHITE_QUEEN => BLACK_QUEEN_CLEAR | BLACK_KING_CLEAR | WHITE_QUEEN_CLEAR,
+            OxideCastleRights::ALL => BLACK_QUEEN_CLEAR | BLACK_KING_CLEAR | WHITE_KING_CLEAR | WHITE_QUEEN_CLEAR,
+        }
     }
 }
 
